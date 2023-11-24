@@ -1,0 +1,78 @@
+Question: Wildcard Matching
+Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*' where:
+
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+The matching should cover the entire input string (not partial).
+
+ 
+
+Example 1:
+
+Input: s = "aa", p = "a"
+Output: false
+Explanation: "a" does not match the entire string "aa".
+Example 2:
+
+Input: s = "aa", p = "*"
+Output: true
+Explanation: '*' matches any sequence.
+Example 3:
+
+Input: s = "cb", p = "?a"
+Output: false
+Explanation: '?' matches 'c', but the second letter is 'a', which does not match 'b'.
+
+Solution/Code: 
+
+class Solution {
+    public boolean isMatch(String s, String p) {
+        dp = new int[s.length()][p.length()];
+        return helper(s, p, 0, 0);
+    }
+
+    int[][] dp;
+    
+    private boolean helper(String s, String p, int iS, int iP) {
+        if((iS == s.length() && iP == p.length()) 
+        || (iS == s.length() && isRestAllAsterisk(p, iP))) {
+            return true;
+        }
+       
+        if(iS >= s.length() || iP >= p.length()) {
+            return false;
+        }
+
+        if(p.charAt(iP) != '?' && p.charAt(iP) != '*' && s.charAt(iS) != p.charAt(iP)) {
+            return false;
+        }
+        if(dp[iS][iP] != 0) {
+            return dp[iS][iP] == 1;
+        }
+        boolean res = false;
+        switch(p.charAt(iP)) {
+            case '?':
+             
+                res = res || helper(s, p, iS + 1, iP + 1);
+                break;
+            case '*':
+                res = res || helper(s, p, iS, iP + 1); // match nothing
+                res = res || helper(s, p, iS + 1, iP + 1); // match one char
+                res = res || helper(s, p, iS + 1, iP); // match one char with no cost
+                break;
+            default:
+                res = res || helper(s, p, iS + 1, iP + 1);
+        }
+         dp[iS][iP] = res ? 1 : -1;
+        return res;
+    }
+
+    private boolean isRestAllAsterisk(String p, int iP) {
+        for(int i = iP ; i < p.length() ; i++) {
+            if(p.charAt(i) != '*') {
+                return false;
+            }
+        }
+        return true;
+    }
+}
